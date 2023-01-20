@@ -21,6 +21,7 @@ CREATE TABLE role (
     REFERENCES department(department_id)
 );
 
+-- may need to reference fk_manager_id to something??
 CREATE TABLE employee (
     employee_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     fk_role_id INT,  
@@ -28,5 +29,6 @@ CREATE TABLE employee (
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,    
     FOREIGN KEY (fk_role_id)
-      REFERENCES role(role_id)
+      REFERENCES role(role_id),
+    FOREIGN KEY (fk_manager_id)
 );
