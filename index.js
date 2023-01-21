@@ -18,19 +18,69 @@ const db = mysql.createConnection(
   console.log(`Connected to the employees_db database.`)
 );
 
-// db.query('SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id', function (err, results) {
-//   const tables = jsonToTable(results);
-//   console.log(tables);
-// });
 
-const sql = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
-const roleHeaders = 
-`ID     Title
---     -----`
-const promptroleGate = () => {
+const sqlDept = 'SELECT department_id, department_name FROM department ORDER BY department_name'
+const sqlRole = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
+
+const promptDeptGate = () => {
   return new Promise(function(resolve, reject){
   db.query(
-      sql, 
+      sqlDept, 
+      function(err, rows){                                                
+          if(rows === undefined){
+              reject(new Error("Error rows is undefined"));
+          }else{
+              resolve(rows);
+          }
+      }
+  )})
+  .then(deptRender => {
+    // console.log(roleRender)
+    let rolesTable = []
+
+    for(var key in deptRender) {
+      deptId = deptRender[key]["department_id"]
+      deptName = deptRender[key]["department_name"]
+
+      let role = new classIndex.Dept(deptId, deptName)
+      let deptId = role.getDeptId()
+      let deptName = role.getDeptName()
+
+      rolesTable.push({"Department ID":deptId, "Department Name":deptName})
+    }
+
+    console.table(rolesTable)
+    process.exit(0);
+  })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const promptRoleGate = () => {
+  return new Promise(function(resolve, reject){
+  db.query(
+      sqlRole, 
       function(err, rows){                                                
           if(rows === undefined){
               reject(new Error("Error rows is undefined"));
@@ -40,7 +90,7 @@ const promptroleGate = () => {
       }
   )})
   .then(roleRender => {
-    console.log(roleRender)
+    // console.log(roleRender)
     let rolesTable = []
 
     for(var key in roleRender) {
@@ -53,7 +103,7 @@ const promptroleGate = () => {
       let name = role.getName()
       let title = role.getTitle()
       let dept = role.getDept()
-      let salary = role.getSalary()
+      let salary = parseInt(role.getSalary())
 
       rolesTable.push({ID:name, Title:title, Department:dept, Salary:salary})
     }
@@ -65,29 +115,8 @@ const promptroleGate = () => {
 
 
 const init = () => {
-  promptroleGate()  
+  promptDeptGate()  
+  // promptRoleGate()  
 }
 
 init();
-
-getEmployeeNames = function(){
-  return new Promise(function(resolve, reject){
-    db.query(
-        sql, 
-        function(err, rows){                                                
-            if(rows === undefined){
-                reject(new Error("Error rows is undefined"));
-            }else{
-                resolve(rows);
-            }
-        }
-    )}
-)}
-
-// getEmployeeNames()
-//   .then(function(results){
-//     console.log(results);
-// })
-//   .catch(function(err){
-//     console.log("Promise rejection error: "+err);
-// })

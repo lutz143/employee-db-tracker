@@ -1,6 +1,11 @@
 -- TEST QUERIES TO IMPLEMENT INTO INDEX.JS --
 
 -- provide all roles, depts, and salaries when queried
+SELECT department_id, department_name
+FROM department
+ORDER BY department_name;
+
+-- provide all roles, depts, and salaries when queried
 SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary
 FROM roles
 LEFT JOIN department
