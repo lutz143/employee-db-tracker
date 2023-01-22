@@ -26,6 +26,7 @@ const sqlRole = 'SELECT roles.role_id, roles.role_title, department.department_n
 const sqlEmployee = 'SELECT employee_1.employee_id, employee_1.first_name, employee_1.last_name, roles.role_title, department.department_name, roles.role_salary, concat(employee.first_name, " ",employee.last_name) AS manager_name FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id WHERE (((employee_1.employee_id) Is Not Null)) ORDER BY employee_1.employee_id'
 
 const promptDeptGate = () => {
+  console.log('feed worked');
   return new Promise(function(resolve, reject){
   db.query(
       sqlDept, 
@@ -155,9 +156,14 @@ const promptMainMenu = () => {
       return promptDeptGate()
     }
 
+    if (answer == 'Add Department'){
+      return addDept()
+    }
+
     if (answer == 'Quit') {
       return quit()
     }
+
   })
 }
 
@@ -189,8 +195,32 @@ const addDept = () => {
   })
 }
 
+const addRole = () => {
+  return inquirer.prompt(questions.newRole)
+  .then(answerVal => {
+    let deptAnswer = new queries.NewRole(answerVal.newRole, answerVal.newRoleSalary)
+    let sql = deptAnswer.getAddRole();
+    console.log(sql)
+    // return new Promise(function(resolve, reject){
+    //   db.query(
+    //       sql, 
+    //       function(err, rows){                                                
+    //           if(err){
+    //               console.log(err);
+    //           }else{
+    //               resolve(rows);
+    //               console.log('Added new dept to db.')
+    //               return promptDeptGate()
+    //           }
+    //       }
+    //   )})
+  })
+}
+
+
 const init = () => {
-  addDept()
+  // addDept()
+  addRole()
   // promptMainMenu()
 }
 
