@@ -5,6 +5,7 @@ const mysql = require('mysql2');
 const jsonToTable = require('json-to-table');
 const classIndex = require("./lib/template");
 const questions = require("./lib/questions");
+const queries = require("./lib/queries");
 
 // Connect to database
 const db = mysql.createConnection(
@@ -166,8 +167,31 @@ const quit = () => {
 }
 
 
+const addDept = () => {
+  return inquirer.prompt(questions.newDept)
+  .then(answerVal => {
+    let deptAnswer = new queries.NewDept(answerVal)
+    let sql = deptAnswer.getAddDept();
+    console.log(sql)
+    return new Promise(function(resolve, reject){
+      db.query(
+          sql, 
+          function(err, rows){                                                
+              if(err){
+                  console.log(err);
+              }else{
+                  resolve(rows);
+                  console.log('Added new dept to db.')
+                  return promptDeptGate()
+              }
+          }
+      )})
+  })
+}
+
 const init = () => {
-  promptMainMenu()
+  addDept()
+  // promptMainMenu()
 }
 
 init();
