@@ -12,10 +12,26 @@ LEFT JOIN department
 ON roles.fk_department_id = department.department_id
 ORDER BY roles.role_id;
 
+
 -- provide all employee IDs, employee first name, employee last name, job title, department, salary, and manager
-SELECT employee.employee_id, employee.first_name, employee.last_name, roles.role_title, department.department_id, roles.role_salary, employee.manager_id
+SELECT employee.employee_id, employee.first_name, employee.last_name, roles.role_title, department.department_id, (SELECT concat(employee.first_name, " ",employee.last_name)
+WHERE manager_id is not null)
 FROM 
 (department LEFT JOIN roles ON department.department_id = roles.fk_department_id) 
 LEFT JOIN employee ON roles.role_id = employee.fk_role_id
 -- INNER JOIN employee manager_id ON employee.employee_id
 ORDER BY employee.employee_id;
+
+
+SELECT concat(employee.first_name, " ",employee.last_name)
+FROM employee
+WHERE manager_id is not null;
+-- LEFT JOIN employee
+-- GROUP BY manager_id;
+-- LEFT JOIN employee_id ON manager_id;
+-- WHERE ;
+-- LEFT JOIN employee ON employee_id = manager_id)
+-- WHERE employee.manager_id = employee.employee_id)
+-- from employee
+-- LEFT JOIN employee ON employee_id = manager_id;
+-- WHERE employee_id = manager_id;
