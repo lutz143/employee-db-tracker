@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 const mysql = require('mysql2');
 const jsonToTable = require('json-to-table');
 const classIndex = require("./lib/template");
+const questions = require("./lib/questions");
 
 // Connect to database
 const db = mysql.createConnection(
@@ -51,7 +52,7 @@ const promptDeptGate = () => {
     }
 
     console.table(rolesTable)
-    process.exit(0);
+    return promptMainMenu()
   })
 }
 
@@ -87,20 +88,9 @@ const promptRoleGate = () => {
     }
 
     console.table(rolesTable)
-    process.exit(0);
+    return promptMainMenu()
   })
 }
-
-
-
-
-
-
-
-
-
-
-
 
 const promptEmployeeGate = () => {
   return new Promise(function(resolve, reject){
@@ -140,15 +130,44 @@ const promptEmployeeGate = () => {
     }
 
     console.table(rolesTable)
-    process.exit(0);
+    return promptMainMenu()
   })
+}
+
+const promptMainMenu = () => {
+  return inquirer.prompt(questions.mainMenu)
+  .then(answerVal => {
+    let menuAnswer = new classIndex.Menu(answerVal)
+    let response = menuAnswer.getMenuAnswer();
+    let answer = Object.values(response)
+    console.log(answer)
+
+    if (answer == 'View All Employees') {
+      return promptEmployeeGate()
+    }
+
+    if (answer == 'View All Roles') {
+      return promptRoleGate()
+    }
+
+    if (answer == 'View All Departments') {
+      return promptDeptGate()
+    }
+
+    if (answer == 'Quit') {
+      return quit()
+    }
+  })
+}
+
+const quit = () => {
+  console.log("\nProcess Complete.");
+  process.exit(0);
 }
 
 
 const init = () => {
-  promptEmployeeGate()
-  // promptDeptGate()
-  // promptRoleGate()  
+  promptMainMenu()
 }
 
 init();
