@@ -39,12 +39,12 @@ const promptDeptGate = () => {
     let rolesTable = []
 
     for(var key in deptRender) {
-      deptId = deptRender[key]["department_id"]
-      deptName = deptRender[key]["department_name"]
+      let deptId = deptRender[key]["department_id"]
+      let deptName = deptRender[key]["department_name"]
 
       let role = new classIndex.Dept(deptId, deptName)
-      let deptId = role.getDeptId()
-      let deptName = role.getDeptName()
+      deptId = role.getDeptId()
+      deptName = role.getDeptName()
 
       rolesTable.push({"Department ID":deptId, "Department Name":deptName})
     }
@@ -53,29 +53,6 @@ const promptDeptGate = () => {
     process.exit(0);
   })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const promptRoleGate = () => {
   return new Promise(function(resolve, reject){
@@ -94,10 +71,10 @@ const promptRoleGate = () => {
     let rolesTable = []
 
     for(var key in roleRender) {
-      roleId = roleRender[key]["role_id"]
-      roleTitle = roleRender[key]["role_title"]
-      roleDept = roleRender[key]["department_name"]
-      roleSalary = roleRender[key]["role_salary"]
+      let roleId = roleRender[key]["role_id"]
+      let roleTitle = roleRender[key]["role_title"]
+      let roleDept = roleRender[key]["department_name"]
+      let roleSalary = roleRender[key]["role_salary"]
 
       let role = new classIndex.Role(roleId, roleTitle, roleDept, roleSalary)
       let name = role.getName()
@@ -115,7 +92,8 @@ const promptRoleGate = () => {
 
 
 const init = () => {
-  promptDeptGate()  
+  
+  // promptDeptGate()
   // promptRoleGate()  
 }
 
