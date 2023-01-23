@@ -14,18 +14,14 @@ ORDER BY roles.role_id;
 
 
 -- provide all employee IDs, employee first name, employee last name, job title, department, salary, and manager
-SELECT employee.employee_id, employee.first_name, employee.last_name, roles.role_title, department.department_id, (SELECT concat(employee.first_name, " ",employee.last_name)
-WHERE manager_id is not null)
-FROM 
-(department LEFT JOIN roles ON department.department_id = roles.fk_department_id) 
-LEFT JOIN employee ON roles.role_id = employee.fk_role_id
--- INNER JOIN employee manager_id ON employee.employee_id
-ORDER BY employee.employee_id;
+SELECT employee_1.employee_id, employee_1.first_name, employee_1.last_name, roles.role_title, department.department_name, roles.role_salary, concat(employee.first_name, " ",employee.last_name) AS manager_name
+FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id
+WHERE (((employee_1.employee_id) Is Not Null))
+ORDER BY employee_1.employee_id;
 
-
-SELECT concat(employee.first_name, " ",employee.last_name)
-FROM employee
-WHERE manager_id is not null;
+-- SELECT concat(employee.first_name, " ",employee.last_name)
+-- FROM employee
+-- WHERE manager_id is not null;
 -- LEFT JOIN employee
 -- GROUP BY manager_id;
 -- LEFT JOIN employee_id ON manager_id;

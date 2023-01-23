@@ -141,6 +141,10 @@ const promptMainMenu = () => {
       return addDept()
     }
 
+    if (answer == 'Add Role'){
+      return addRole()
+    }
+
     if (answer == 'Quit') {
       return quit()
     }
@@ -176,25 +180,29 @@ const addDept = () => {
   })
 }
 
+
+
+
 const addRole = () => {
   return inquirer.prompt(questions.newRole)
   .then(answerVal => {
-    let deptAnswer = new queries.NewRole(answerVal.newRole, answerVal.newRoleSalary)
-    let sql = deptAnswer.getAddRole();
-    console.log(sql)
-    // return new Promise(function(resolve, reject){
-    //   db.query(
-    //       sql, 
-    //       function(err, rows){                                                
-    //           if(err){
-    //               console.log(err);
-    //           }else{
-    //               resolve(rows);
-    //               console.log('Added new dept to db.')
-    //               return promptDeptGate()
-    //           }
-    //       }
-    //   )})
+    let dept = answerVal.newFkDept
+    let fkDeptId = []
+    sql = `SELECT department_id FROM department WHERE (department_name="${dept}")`;
+    return dbSearch(sql)
+    .then(returnData => {
+      for(var key in returnData) {
+        let deptId = returnData[key]["department_id"];
+        fkDeptId.push(deptId);
+      }
+      let deptAnswer = new queries.NewRole(fkDeptId, answerVal.newRole, answerVal.newRoleSalary)
+      let sqlUpdate = deptAnswer.getAddRole();
+      return dbSearch(sqlUpdate)
+      .then(sqlRun => {
+        console.log(`${answerVal.newRole} added to available roles.`)
+        return promptMainMenu()
+      })      
+    })
   })
 }
 
