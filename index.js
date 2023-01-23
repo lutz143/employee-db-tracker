@@ -138,7 +138,7 @@ const promptMainMenu = () => {
     }
 
     if (answer == 'Add Department'){
-      return addDept()
+      return addDept()      
     }
 
     if (answer == 'Add Role'){
@@ -163,20 +163,16 @@ const addDept = () => {
   .then(answerVal => {
     let deptAnswer = new queries.NewDept(answerVal)
     let sql = deptAnswer.getAddDept();
+    let answer = Object.values(answerVal)
     console.log(sql)
-    return new Promise(function(resolve, reject){
-      db.query(
-          sql, 
-          function(err, rows){                                                
-              if(err){
-                  console.log(err);
-              }else{
-                  resolve(rows);
-                  console.log('Added new dept to db.')
-                  return promptDeptGate()
-              }
-          }
-      )})
+    return dbSearch(sql)
+    .then(sqlRun => {
+      console.log(`Added ${answer} department.`)
+      return questions.deptSelection()
+      .then(newDeptList => {
+        return promptMainMenu()
+      })      
+    })    
   })
 }
 
