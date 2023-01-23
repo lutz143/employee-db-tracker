@@ -1,5 +1,4 @@
 // load inquirer and mysql
-// const fs = require('fs');
 const inquirer = require("inquirer");
 const mysql = require('mysql2');
 const jsonToTable = require('json-to-table');
@@ -20,24 +19,24 @@ const db = mysql.createConnection(
   console.log(`Connected to the employees_db database.`)
 );
 
-
-const sqlDept = 'SELECT department_id, department_name FROM department ORDER BY department_name'
-const sqlRole = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
-const sqlEmployee = 'SELECT employee_1.employee_id, employee_1.first_name, employee_1.last_name, roles.role_title, department.department_name, roles.role_salary, concat(employee.first_name, " ",employee.last_name) AS manager_name FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id WHERE (((employee_1.employee_id) Is Not Null)) ORDER BY employee_1.employee_id'
+// function to call sql query
+const dbSearch = (sql) => {
+  return new Promise(function(resolve, reject){
+    db.query(
+        sql, 
+        function(err, rows){                                                
+            if(rows === undefined){
+                reject(new Error("Error rows is undefined"));
+            }else{
+                resolve(rows);
+            }
+        }
+    )})
+}
 
 const promptDeptGate = () => {
-  console.log('feed worked');
-  return new Promise(function(resolve, reject){
-  db.query(
-      sqlDept, 
-      function(err, rows){                                                
-          if(rows === undefined){
-              reject(new Error("Error rows is undefined"));
-          }else{
-              resolve(rows);
-          }
-      }
-  )})
+  const sql = 'SELECT department_id, department_name FROM department ORDER BY department_name'
+  return dbSearch(sql)
   .then(deptRender => {
     // console.log(roleRender)
     let rolesTable = []
@@ -59,17 +58,8 @@ const promptDeptGate = () => {
 }
 
 const promptRoleGate = () => {
-  return new Promise(function(resolve, reject){
-  db.query(
-      sqlRole, 
-      function(err, rows){                                                
-          if(rows === undefined){
-              reject(new Error("Error rows is undefined"));
-          }else{
-              resolve(rows);
-          }
-      }
-  )})
+  const sql = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
+  return dbSearch(sql)
   .then(roleRender => {
     // console.log(roleRender)
     let rolesTable = []
@@ -95,17 +85,8 @@ const promptRoleGate = () => {
 }
 
 const promptEmployeeGate = () => {
-  return new Promise(function(resolve, reject){
-  db.query(
-      sqlEmployee, 
-      function(err, rows){                                                
-          if(rows === undefined){
-              reject(new Error("Error rows is undefined"));
-          }else{
-              resolve(rows);
-          }
-      }
-  )})
+  const sql = 'SELECT employee_1.employee_id, employee_1.first_name, employee_1.last_name, roles.role_title, department.department_name, roles.role_salary, concat(employee.first_name, " ",employee.last_name) AS manager_name FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id WHERE (((employee_1.employee_id) Is Not Null)) ORDER BY employee_1.employee_id'
+  return dbSearch(sql)
   .then(employeeRender => {
     // console.log(employeeRender)
     let rolesTable = []
@@ -220,8 +201,8 @@ const addRole = () => {
 
 const init = () => {
   // addDept()
-  addRole()
-  // promptMainMenu()
+  // addRole()
+  promptMainMenu()
 }
 
 init();
