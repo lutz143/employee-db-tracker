@@ -157,7 +157,6 @@ const quit = () => {
   process.exit(0);
 }
 
-
 const addDept = () => {
   return inquirer.prompt(questions.newDept)
   .then(answerVal => {
@@ -176,9 +175,6 @@ const addDept = () => {
   })
 }
 
-
-
-
 const addRole = () => {
   return inquirer.prompt(questions.newRole)
   .then(answerVal => {
@@ -191,8 +187,8 @@ const addRole = () => {
         let deptId = returnData[key]["department_id"];
         fkDeptId.push(deptId);
       }
-      let deptAnswer = new queries.NewRole(fkDeptId, answerVal.newRole, answerVal.newRoleSalary)
-      let sqlUpdate = deptAnswer.getAddRole();
+      let roleAnswer = new queries.NewRole(fkDeptId, answerVal.newRole, answerVal.newRoleSalary)
+      let sqlUpdate = roleAnswer.getAddRole();
       return dbSearch(sqlUpdate)
       .then(sqlRun => {
         console.log(`${answerVal.newRole} added to available roles.`)
@@ -202,11 +198,36 @@ const addRole = () => {
   })
 }
 
+const addEmployee = () => {
+  return inquirer.prompt(questions.newEmployee)
+  .then(answerVal => {
+    let role = answerVal.newFkRole
+    let fkRoleId = []
+    sql = `SELECT role_id FROM roles WHERE (role_title="${role}")`;
+    return dbSearch(sql)
+    .then(returnData => {
+      for(var key in returnData) {
+        let roleId = returnData[key]["role_id"];
+        fkRoleId.push(roleId);
+      }
+      let employeeAnswer = new queries.NewEmployee(fkRoleId, answerVal.newFirstName, answerVal.newLastName)
+      let sqlUpdate = employeeAnswer.getAddEmployee();
+      console.log(sqlUpdate);
+      // return dbSearch(sqlUpdate)
+      // .then(sqlRun => {
+      //   console.log(`${answerVal.newRole} added to available roles.`)
+      //   return promptMainMenu()
+      // })      
+    })
+  })
+}
+
 
 const init = () => {
   // addDept()
   // addRole()
-  promptMainMenu()
+  addEmployee()
+  // promptMainMenu()
 }
 
 init();
