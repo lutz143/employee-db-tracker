@@ -145,6 +145,10 @@ const promptMainMenu = () => {
       return addRole()
     }
 
+    if (answer == 'Add Employee'){
+      return addEmployee()
+    }
+
     if (answer == 'Quit') {
       return quit()
     }
@@ -192,7 +196,10 @@ const addRole = () => {
       return dbSearch(sqlUpdate)
       .then(sqlRun => {
         console.log(`${answerVal.newRole} added to available roles.`)
-        return promptMainMenu()
+        return questions.roleSelection()
+        .then(newRoleList => {
+          return promptMainMenu()
+        })        
       })      
     })
   })
@@ -202,22 +209,37 @@ const addEmployee = () => {
   return inquirer.prompt(questions.newEmployee)
   .then(answerVal => {
     let role = answerVal.newFkRole
+    let manager = answerVal.newFkManager
+    console.log(manager)
     let fkRoleId = []
+    let fkManagerId = []
     sql = `SELECT role_id FROM roles WHERE (role_title="${role}")`;
+    sqlManager = `SELECT employee_id, concat(employee.first_name," ",employee.last_name) AS manager_name FROM employee WHERE concat(employee.first_name," ",employee.last_name) = "${manager}"`;
+    
     return dbSearch(sql)
     .then(returnData => {
       for(var key in returnData) {
         let roleId = returnData[key]["role_id"];
         fkRoleId.push(roleId);
       }
-      let employeeAnswer = new queries.NewEmployee(fkRoleId, answerVal.newFirstName, answerVal.newLastName)
-      let sqlUpdate = employeeAnswer.getAddEmployee();
-      console.log(sqlUpdate);
-      // return dbSearch(sqlUpdate)
-      // .then(sqlRun => {
-      //   console.log(`${answerVal.newRole} added to available roles.`)
-      //   return promptMainMenu()
-      // })      
+
+      return dbSearch(sqlManager)
+      .then(managerData => {
+        for(var key in managerData) {
+          let managerId = managerData[key]["employee_id"];
+          fkManagerId.push(managerId);
+        }
+        console.log(fkManagerId)
+
+        let employeeAnswer = new queries.NewEmployee(fkRoleId, answerVal.newFirstName, answerVal.newLastName, fkManagerId)
+        let sqlUpdate = employeeAnswer.getAddEmployee();
+        console.log(sqlUpdate)
+        return dbSearch(sqlUpdate)
+        .then(sqlRun => {
+          console.log(`${answerVal.newFirstName} ${answerVal.newLastName} added to Employee Database.`)
+          return promptMainMenu()
+        })
+    })      
     })
   })
 }
@@ -226,8 +248,8 @@ const addEmployee = () => {
 const init = () => {
   // addDept()
   // addRole()
-  addEmployee()
-  // promptMainMenu()
+  // addEmployee()
+  promptMainMenu()
 }
 
 init();
