@@ -16,7 +16,6 @@ const db = mysql.createConnection(
     password: 'd3velop23',
     database: 'employees_db'
   },
-  console.log(`Connected to the employees_db database.`)
 );
 
 // function to call sql query
@@ -34,11 +33,11 @@ const dbSearch = (sql) => {
     )})
 }
 
+// function to return all the departments in db
 const promptDeptGate = () => {
   const sql = 'SELECT department_id, department_name FROM department ORDER BY department_name'
   return dbSearch(sql)
   .then(deptRender => {
-    // console.log(roleRender)
     let rolesTable = []
 
     for(var key in deptRender) {
@@ -57,11 +56,11 @@ const promptDeptGate = () => {
   })
 }
 
+// function to return all the roles in db
 const promptRoleGate = () => {
   const sql = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
   return dbSearch(sql)
   .then(roleRender => {
-    // console.log(roleRender)
     let rolesTable = []
 
     for(var key in roleRender) {
@@ -84,11 +83,11 @@ const promptRoleGate = () => {
   })
 }
 
+// function to return all employees in db
 const promptEmployeeGate = () => {
   const sql = 'SELECT employee_1.employee_id, employee_1.first_name, employee_1.last_name, roles.role_title, department.department_name, roles.role_salary, concat(employee.first_name, " ",employee.last_name) AS manager_name FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id WHERE (((employee_1.employee_id) Is Not Null)) ORDER BY employee_1.employee_id'
   return dbSearch(sql)
   .then(employeeRender => {
-    // console.log(employeeRender)
     let rolesTable = []
 
     for(var key in employeeRender) {
@@ -117,13 +116,13 @@ const promptEmployeeGate = () => {
   })
 }
 
+// function to prompt the main menu inquirer questions and call the resulting function given the user's input
 const promptMainMenu = () => {
   return inquirer.prompt(questions.mainMenu)
   .then(answerVal => {
     let menuAnswer = new classIndex.Menu(answerVal)
     let response = menuAnswer.getMenuAnswer();
     let answer = Object.values(response)
-    console.log(answer)
 
     if (answer == 'View All Employees') {
       return promptEmployeeGate()
@@ -160,18 +159,19 @@ const promptMainMenu = () => {
   })
 }
 
+// function to quit the node process if selected by the user
 const quit = () => {
   console.log("\nProcess Complete.");
   process.exit(0);
 }
 
+// function to add a department via sql from the class NewDept (INSERT INTO)
 const addDept = () => {
   return inquirer.prompt(questions.newDept)
   .then(answerVal => {
     let deptAnswer = new queries.NewDept(answerVal)
     let sql = deptAnswer.getAddDept();
     let answer = Object.values(answerVal)
-    console.log(sql)
     return dbSearch(sql)
     .then(sqlRun => {
       console.log(`Added ${answer} department.`)
@@ -183,6 +183,7 @@ const addDept = () => {
   })
 }
 
+// function to add a role via sql from the class NewRole (INSERT INTO)
 const addRole = () => {
   return inquirer.prompt(questions.newRole)
   .then(answerVal => {
@@ -209,12 +210,12 @@ const addRole = () => {
   })
 }
 
+// function to add an employee via sql from the class NewEmployee (INSERT INTO) but selecting various FKs from subsequent sql select statements
 const addEmployee = () => {
   return inquirer.prompt(questions.newEmployee)
   .then(answerVal => {
     let role = answerVal.newFkRole
     let manager = answerVal.newFkManager
-    console.log(manager)
     let fkRoleId = []
     let fkManagerId = []
     sql = `SELECT role_id FROM roles WHERE (role_title="${role}")`;
@@ -233,11 +234,9 @@ const addEmployee = () => {
           let managerId = managerData[key]["employee_id"];
           fkManagerId.push(managerId);
         }
-        console.log(fkManagerId)
 
         let employeeAnswer = new queries.NewEmployee(fkRoleId, answerVal.newFirstName, answerVal.newLastName, fkManagerId)
         let sqlUpdate = employeeAnswer.getAddEmployee();
-        console.log(sqlUpdate)
         return dbSearch(sqlUpdate)
         .then(sqlRun => {
           console.log(`${answerVal.newFirstName} ${answerVal.newLastName} added to Employee Database.`)
@@ -248,12 +247,12 @@ const addEmployee = () => {
   })
 }
 
+// function to update an employee role given the employee selected from the user and the new role that the selected employee should be assigned using an UPDATE sql statement
 const updateEmployeeRole = () => {
   return inquirer.prompt(questions.updateEmployeeRole)
   .then(answerVal => {
     let role = answerVal.newFkRole
     let employee = answerVal.updateRoleEmployee
-    console.log(employee)
     sqlUpdate = `UPDATE roles LEFT JOIN employee ON roles.role_id = employee.fk_role_id SET roles.role_title = "${role}" WHERE concat(employee.first_name," ",employee.last_name) = "${employee}"`;
     return dbSearch(sqlUpdate)
     .then(sqlRun => {
@@ -263,6 +262,7 @@ const updateEmployeeRole = () => {
   })
 }
 
+// function to originally call the main menu prompt when application is initiated
 const init = () => {
   // addDept()
   // addRole()

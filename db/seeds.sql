@@ -1,3 +1,4 @@
+-- resulting SQL statements insert data into department, roles, and employee tables for employees_db
 INSERT INTO department (department_id, department_name)
 VALUES 
     (2, "Engineering"),
