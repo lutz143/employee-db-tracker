@@ -56,6 +56,16 @@ const promptDeptGate = () => {
   })
 }
 
+// function to view the total utilized budget of a department—in other words, the combined salaries of all employees in that department 
+const promptUtilizedBudget = () => {
+  const sql = 'SELECT department.department_name, Sum(roles.role_salary) AS utilized_budget FROM department LEFT JOIN (roles LEFT JOIN (employee RIGHT JOIN employee AS employee_1 ON employee.employee_id = employee_1.manager_id) ON roles.role_id = employee_1.fk_role_id) ON department.department_id = roles.fk_department_id GROUP BY department.department_name'
+  return dbSearch(sql)
+  .then(answerVal => {
+    console.table(answerVal)
+    return promptMainMenu()
+  })
+}
+
 // function to return all the roles in db
 const promptRoleGate = () => {
   const sql = 'SELECT roles.role_id, roles.role_title, department.department_name, roles.role_salary FROM roles LEFT JOIN department ON roles.fk_department_id = department.department_id ORDER BY roles.role_id'
@@ -150,6 +160,10 @@ const promptMainMenu = () => {
 
     if (answer == 'Update Employee Role'){
       return updateEmployeeRole()
+    }
+
+    if (answer == 'View Total Utilized Budget by Dept') {
+      return promptUtilizedBudget()
     }
 
     if (answer == 'Quit') {
@@ -269,6 +283,7 @@ const init = () => {
   // addEmployee()
   promptMainMenu()
   // updateEmployeeRole()
+  // promptUtilizedBudget()
 }
 
 init();
