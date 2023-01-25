@@ -149,6 +149,10 @@ const promptMainMenu = () => {
       return addEmployee()
     }
 
+    if (answer == 'Update Employee Role'){
+      return updateEmployeeRole()
+    }
+
     if (answer == 'Quit') {
       return quit()
     }
@@ -244,12 +248,27 @@ const addEmployee = () => {
   })
 }
 
+const updateEmployeeRole = () => {
+  return inquirer.prompt(questions.updateEmployeeRole)
+  .then(answerVal => {
+    let role = answerVal.newFkRole
+    let employee = answerVal.updateRoleEmployee
+    console.log(employee)
+    sqlUpdate = `UPDATE roles LEFT JOIN employee ON roles.role_id = employee.fk_role_id SET roles.role_title = "${role}" WHERE concat(employee.first_name," ",employee.last_name) = "${employee}"`;
+    return dbSearch(sqlUpdate)
+    .then(sqlRun => {
+      console.log(`Updated role for ${employee} to ${role}.`)
+      return promptMainMenu()
+    })
+  })
+}
 
 const init = () => {
   // addDept()
   // addRole()
   // addEmployee()
   promptMainMenu()
+  // updateEmployeeRole()
 }
 
 init();

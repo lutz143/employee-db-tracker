@@ -10,6 +10,12 @@
 
 
 -- test query to find filter on manager for their ID
-SELECT employee_id, concat(employee.first_name," ",employee.last_name) AS manager_name
-FROM employee
-WHERE concat(employee.first_name," ",employee.last_name) = "Mary Sluis";
+-- SELECT employee_id, concat(employee.first_name," ",employee.last_name) AS manager_name
+-- FROM employee
+-- WHERE concat(employee.first_name," ",employee.last_name) = "Mary Sluis";
+
+-- test query to update an employee to a new role
+-- UPDATE roles LEFT JOIN employee ON roles.role_id = employee.fk_role_id SET roles.role_title = "Account Manager" WHERE concat(employee.first_name," ",employee.last_name) = "Ramzi Erde";
+
+-- test query to pull employee name into a list
+SELECT concat(first_name, " ", last_name) AS employee_name FROM employee ORDER BY last_name;
