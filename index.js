@@ -10,9 +10,7 @@ const queries = require("./lib/queries");
 const db = mysql.createConnection(
   {
     host: 'localhost',
-    // MySQL Username
     user: 'root',
-    // TODO: Add MySQL Password
     password: 'd3velop23',
     database: 'employees_db'
   },
