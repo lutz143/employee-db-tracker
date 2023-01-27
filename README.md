@@ -3,7 +3,7 @@
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 ## Description
-The Employee Database Interface utilizes MySQL schemas and relational database management to modify and manipulate a backend SQL database through javascript and MySQL syntax. The app prompts the user to enter and view new departments, roles, and employees in order to organize an employee base quickly and easily.
+The Employee Database Interface utilizes MySQL schemas and relational database management to modify and manipulate a backend SQL database through javascript and MySQL syntax to create a content management system (CMS). The app prompts the user to enter and view new departments, roles, and employees in order to organize an employee base quickly and easily.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ If your README is long, add a table of contents to make it easy for users to fin
 Application usage is via node which will prompt the user through a series of Main Menu options to view and manipulate an organization's departments, roles, and employees.
 
 ## Link to Video Demonstration
-* To view demo: https://drive.google.com/file/d/11R_t5SHodJHqefISNvkxl4mhqLmKAviQ/view
+* To view demo: https://drive.google.com/file/d/1ufDJbsTamvJOJ0v-Oa2um0gtqoXkIiXP/view
 
 ---
 
